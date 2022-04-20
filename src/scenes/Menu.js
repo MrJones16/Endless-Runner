@@ -9,6 +9,7 @@ class Menu extends Phaser.Scene {
       }
 
     create(){
+        this.scene.start("playScene");
         let menuConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
