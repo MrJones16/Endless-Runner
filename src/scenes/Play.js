@@ -10,19 +10,21 @@ class Play extends Phaser.Scene {
         this.load.image('player', './assets/test_player.png');
         this.load.image('rocket', './assets/test_rocket.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
-        this.load.image('background', './assets/backgroundtiles.png');
+        this.load.image('background', './assets/background.png');
       }
 
     create(){
+        //Creating background tileSprite
+        this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         this.add.text(0, 0, "Play Scene");
-        this.background = this.add.tileSprite(0, 0, 0, 0, 'background').setOrigin(0, 0);
+        
 
         this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         
     }
     update() {
-        this.background.x += 1;
+        this.background.tilePositionX += 1;
         //crosshair follows mouse
         var pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
