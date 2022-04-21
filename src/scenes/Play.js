@@ -52,13 +52,22 @@ class Play extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             let thenPos = pointer;
             let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
-            this.shoot(angle);
+            this.shoot(angle, thenPos.x, thenPos.y);
         }, this);
-
+        
     }
-    shoot(angle) {
-        this.rocket = new Rocket(this, this.player.x, this.player.y, 'rocket');
+    shoot(angle, x, y) {
+        //this.rocket = new Rocket(this, this.player.x, this.player.y, 'rocket');
+        this.rocket = this.physics.add.sprite(this.player.x, this.player.y, 'rocket');
         this.rocket.rotation = angle;
+        this.physics.moveTo(this.rocket, x, y, 1500);
+        this.rocket.body.collideWorldBounds = true;
+        this.rocket.body.onWorldBounds = true;
+        // this.physics.world.on('worldbounds', (body, up, down, left, right)=> {
+        //     if (up){
+        //         this.rocket.destroy();
+        //     }
+        // })
         // var rocket = new Rocket({
         //     scene: this.scene,
         //     x: this.player.x,
