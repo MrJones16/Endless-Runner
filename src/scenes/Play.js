@@ -11,12 +11,21 @@ class Play extends Phaser.Scene {
         this.load.image('rocket', './assets/test_rocket.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
         this.load.image('background', './assets/background.png');
+        this.load.image('floor', './assets/floor.png');
+        this.load.image('wallofdeath', './assets/wallofdeath.png');
       }
 
     create(){
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         this.add.text(0, 0, "Play Scene");
+        //Physics Groups
+        this.mapGroup = this.physics.add.staticGroup();
+        //--Wall of death to destroy map and obstacles that go off screen
+        this.wallOfDeath = this.physics.add.staticGroup();
+        this.wallOfDeath.create(-100, -10, 'wallofdeath'); 
+        //Physics Collisions
+        //this.physics.add.collider(this.mapGroup, this.wallOfDeath);
         
 
         this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0);
@@ -24,7 +33,17 @@ class Play extends Phaser.Scene {
         
     }
     update() {
+        //LEVEL GENERATION------------------------
+        //update background
         this.background.tilePositionX += 1;
+        //Spawning the floor
+        this.mapGroup.create(400, 395, 'floor');
+        //spawning the ceiling
+
+        //Spawning enemies/obstacles
+
+        //LEVEL GEN END --------------------------
+
         //crosshair follows mouse
         var pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
