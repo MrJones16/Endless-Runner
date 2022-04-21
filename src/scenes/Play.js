@@ -23,10 +23,21 @@ class Play extends Phaser.Scene {
         this.mapGroup = this.physics.add.staticGroup();
         //--Wall of death to destroy map and obstacles that go off screen
         this.wallOfDeath = this.physics.add.staticGroup();
-        this.wallOfDeath.create(-100, -10, 'wallofdeath'); 
+        this.wallOfDeath.create(-256, -10, 'wallofdeath'); 
         //Physics Collisions
-        //this.physics.add.collider(this.mapGroup, this.wallOfDeath);
-        
+        this.physics.add.collider(this.mapGroup, this.wallOfDeath);
+        this.background.tilePositionX += 1;
+        //Spawning the floor
+        let floor1 = this.physics.add.image(0, 416, 'floor').setOrigin(0, 0);
+        floor1.setImmovable(true);
+        floor1.body.allowGravity = false;
+        floor1.setVelocityX(-100);
+        this.mapGroup.add(floor1);
+        floor1 = this.physics.add.image(512, 416, 'floor').setOrigin(0, 0);
+        floor1.setImmovable(true);
+        floor1.body.allowGravity = false;
+        floor1.setVelocityX(-100);
+        this.mapGroup.add(floor1);
 
         this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
@@ -36,9 +47,6 @@ class Play extends Phaser.Scene {
         //LEVEL GENERATION------------------------
         //update background
         this.background.tilePositionX += 1;
-        //Spawning the floor
-        this.mapGroup.create(400, 395, 'floor');
-        //spawning the ceiling
 
         //Spawning enemies/obstacles
 
