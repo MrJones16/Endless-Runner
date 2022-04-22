@@ -14,37 +14,53 @@ class Play extends Phaser.Scene {
         this.load.image('background', './assets/background.png');
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
+        this.load.image('holeshading', './assets/holeshading.png');
       }
 
     create(){
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         this.add.text(0, 0, "Play Scene");
+        //create hole shading
+        this.add.image(0,416, 'holeshading').setOrigin(0,0);
         //Physics Groups
-        this.mapGroup = this.physics.add.staticGroup();
+        this.floorGroup = this.physics.add.staticGroup();
         //--Wall of death to destroy map and obstacles that go off screen
         this.wallOfDeath = this.physics.add.staticGroup();
-        this.wallOfDeath.create(-256, -10, 'wallofdeath'); 
+        this.wallOfDeath.create(-520, -10, 'wallofdeath'); 
         //Physics Collisions
-        this.physics.add.collider(this.mapGroup, this.wallOfDeath);
+        this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {
+            floor.destroy();
+            var createdFloor = this.physics.add.image(768, 416, 'floor').setOrigin(0, 0);
+            createdFloor.setImmovable(true);
+            createdFloor.body.allowGravity = false;
+            createdFloor.setVelocityX(-250);
+            this.floorGroup.add(createdFloor);
+        });
         this.background.tilePositionX += 1;
         //Spawning the floor
         let floor1 = this.physics.add.image(0, 416, 'floor').setOrigin(0, 0);
         floor1.setImmovable(true);
         floor1.body.allowGravity = false;
-        floor1.setVelocityX(-100);
-        this.mapGroup.add(floor1);
+        floor1.setVelocityX(-250);
+        this.floorGroup.add(floor1);
         floor1 = this.physics.add.image(512, 416, 'floor').setOrigin(0, 0);
         floor1.setImmovable(true);
         floor1.body.allowGravity = false;
-        floor1.setVelocityX(-100);
-        this.mapGroup.add(floor1);
+        floor1.setVelocityX(-250);
+        this.floorGroup.add(floor1);
+        this.spawnFloor = false;
 
-        this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0);
+        this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0.5);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
+        this.crosshair.depth = 10;
 
         this.rockets = new Rockets(this);
         
+    }
+    FloorCollision(floor, wall){
+        
+
     }
     update() {
         //LEVEL GENERATION------------------------
