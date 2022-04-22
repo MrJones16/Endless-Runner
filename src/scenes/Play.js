@@ -21,54 +21,45 @@ class Play extends Phaser.Scene {
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         this.add.text(0, 0, "Play Scene");
+
         //create hole shading
         this.add.image(0,416, 'holeshading').setOrigin(0,0);
+
         //Physics Groups
-        this.floorGroup = this.physics.add.staticGroup();
+        this.floorGroup = this.physics.add.group();
+
         //--Wall of death to destroy map and obstacles that go off screen
         this.wallOfDeath = this.physics.add.staticGroup();
         this.wallOfDeath.create(-520, -10, 'wallofdeath'); 
-        //Physics Collisions
-        this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {
-            floor.destroy();
-            var createdFloor = this.physics.add.image(768, 416, 'floor').setOrigin(0, 0);
-            createdFloor.setImmovable(true);
-            createdFloor.body.allowGravity = false;
-            createdFloor.setVelocityX(-250);
-            this.floorGroup.add(createdFloor);
-        });
-        this.background.tilePositionX += 1;
-        //Spawning the floor
-        let floor1 = this.physics.add.image(0, 416, 'floor').setOrigin(0, 0);
-        floor1.setImmovable(true);
-        floor1.body.allowGravity = false;
-        floor1.setVelocityX(-250);
-        this.floorGroup.add(floor1);
-        floor1 = this.physics.add.image(512, 416, 'floor').setOrigin(0, 0);
-        floor1.setImmovable(true);
-        floor1.body.allowGravity = false;
-        floor1.setVelocityX(-250);
-        this.floorGroup.add(floor1);
-        this.spawnFloor = false;
 
+        //Physics Collisions
+        this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {floor.destroy();});
+
+        //Initializing starting floor
+        this.floorGroup.create(0,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(256,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(512,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(768,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+
+        //Creating repeating floor
+        this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.levelClockRepeat();
+
+        //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
         this.player = this.physics.add.sprite(game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100, 'player');
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         this.crosshair.depth = 10;
-
         this.rockets = new Rockets(this);
 
         //player and floor collision
         this.player.body.friction.x = 0;
         this.player.setCollideWorldBounds(true);
-        this.physics.add.collider(this.player, floor1);
+        this.physics.add.collider(this.player, this.floorGroup);
 
         
     }
-    FloorCollision(floor, wall){
-        
-
-    }
+    
     update() {
         //LEVEL GENERATION------------------------
         //update background
@@ -90,6 +81,17 @@ class Play extends Phaser.Scene {
 
         }, this);
         
+    }
+
+    levelClockRepeat(){
+        if (this.levelGenerationClock != null)
+        this.levelGenerationClock.destroy();
+        this.levelGenerationClock = this.time.delayedCall(1000, () => {
+            console.log("Placing floor");
+            this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+            //repeat Clock
+            this.levelClockRepeat();
+        }, null, this);
     }
     //shoot(angle, x, y) {
         //this.rocket = new Rocket(this, this.player.x, this.player.y, 'rocket');
