@@ -43,7 +43,8 @@ class Play extends Phaser.Scene {
 
         //Creating repeating floor
         this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-        this.levelClockRepeat();
+        var canHole = true;
+        this.levelClockRepeat(canHole);
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -56,8 +57,8 @@ class Play extends Phaser.Scene {
         this.player.body.friction.x = 0;
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, this.floorGroup);
-
         
+
     }
     
     update() {
@@ -78,19 +79,29 @@ class Play extends Phaser.Scene {
             let thenPos = pointer;
             let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
             this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
-
+            //TEMPORARY JUMP
+            if (this.player.body.touching.down){
+                this.player.setVelocityY(-600);
+            }
         }, this);
         
     }
 
-    levelClockRepeat(){
+    levelClockRepeat(holeBool){
         if (this.levelGenerationClock != null)
         this.levelGenerationClock.destroy();
         this.levelGenerationClock = this.time.delayedCall(1000, () => {
-            console.log("Placing floor");
-            this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+            if (Phaser.Math.Between(0, 4) == 0 && holeBool){
+                console.log("Creating hole");
+                holeBool = false;
+            }
+            else{
+                console.log("Placing floor");
+                this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                holeBool = true;
+            }
             //repeat Clock
-            this.levelClockRepeat();
+            this.levelClockRepeat(holeBool);
         }, null, this);
     }
     //shoot(angle, x, y) {
