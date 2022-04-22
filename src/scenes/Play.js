@@ -1,6 +1,7 @@
 class Play extends Phaser.Scene {
     constructor(){
         super("playScene");
+        this.rockets;
     }
 
     preload() {
@@ -41,6 +42,8 @@ class Play extends Phaser.Scene {
 
         this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
+
+        this.rockets = new Rockets(this);
         
     }
     update() {
@@ -60,17 +63,18 @@ class Play extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             let thenPos = pointer;
             let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
-            this.shoot(angle, thenPos.x, thenPos.y);
+            this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
         }, this);
         
     }
-    shoot(angle, x, y) {
+    //shoot(angle, x, y) {
         //this.rocket = new Rocket(this, this.player.x, this.player.y, 'rocket');
-        this.rocket = this.physics.add.sprite(this.player.x, this.player.y, 'rocket');
-        this.rocket.rotation = angle;
-        this.physics.moveTo(this.rocket, x, y, 1500);
-        this.rocket.body.collideWorldBounds = true;
-        this.rocket.body.onWorldBounds = true;
+        //this.rocket = this.physics.add.sprite(this.player.x, this.player.y, 'rocket');
+        //this.rocket.rotation = angle;
+        //this.physics.moveTo(this.rocket, x, y, 1500);
+        //this.rocket.body.collideWorldBounds = true;
+        //this.rocket.body.onWorldBounds = true;
+
         // this.physics.world.on('worldbounds', (body, up, down, left, right)=> {
         //     if (up){
         //         this.rocket.destroy();
@@ -82,5 +86,5 @@ class Play extends Phaser.Scene {
         //     y: this.player.y
         // });
         // rocket.rotation = angle;
-    }
+    //}
 }
