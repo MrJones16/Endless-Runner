@@ -51,11 +51,18 @@ class Play extends Phaser.Scene {
         this.floorGroup.add(floor1);
         this.spawnFloor = false;
 
-        this.player = new Player(this, game.config.width / 2, game.config.height - borderUISize - borderPadding - 100, 'player').setOrigin(0.5, 0.5);
+        //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
+        this.player = this.physics.add.sprite(game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100, 'player');
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         this.crosshair.depth = 10;
 
         this.rockets = new Rockets(this);
+
+        //player and floor collision
+        this.player.body.friction.x = 0;
+        this.player.setCollideWorldBounds(true);
+        this.physics.add.collider(this.player, floor1);
+
         
     }
     FloorCollision(floor, wall){
@@ -80,6 +87,7 @@ class Play extends Phaser.Scene {
             let thenPos = pointer;
             let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
             this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
+
         }, this);
         
     }
