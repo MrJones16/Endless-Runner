@@ -4,12 +4,16 @@ class Rocket extends Phaser.Physics.Arcade.Sprite {
         //adds object to existing scene
         scene.add.existing(this);
     }
-    fire (angle, x, y, mouseX, mouseY){
+    fire(angle, x, y, mouseX, mouseY) {
         this.body.reset(x, y);
         this.setActive(true);
         this.setVisible(true);
         this.rotation = angle;
         this.scene.physics.moveTo(this, mouseX, mouseY, 1500);
+    }
+    explode() {
+        this.setActive(false);
+        this.setVisible(false);
     }
     preUpdate(time, delta){
         super.preUpdate(time, delta);
@@ -37,10 +41,28 @@ class Rockets extends Phaser.Physics.Arcade.Group {
             classType: Rocket
         });
     }
-    fireRocket (angle, x, y, mouseX, mouseY){
+    fireRocket(angle, x, y, mouseX, mouseY) {
         let rocket = this.getFirstDead(false);
         if (rocket){
             rocket.fire(angle, x, y, mouseX, mouseY);
+        }
+    }
+    blowUp() {
+        let rocket = this.getFirstAlive();
+        if (rocket){
+            rocket.explode();
+        }
+    }
+    rocketX() {
+        let rocket = this.getFirstAlive();
+        if (rocket){
+            return rocket.x;
+        }
+    }
+    rocketY() {
+        let rocket = this.getFirstAlive();
+        if (rocket){
+            return rocket.y;
         }
     }
 }

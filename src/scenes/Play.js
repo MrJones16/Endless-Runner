@@ -15,6 +15,7 @@ class Play extends Phaser.Scene {
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
+        this.load.image('explosion', './assets/test_explosion.png');
       }
 
     create(){
@@ -23,7 +24,10 @@ class Play extends Phaser.Scene {
         this.add.text(0, 0, "Play Scene");
 
         //create hole shading
-        this.add.image(0,416, 'holeshading').setOrigin(0,0);
+        //y = 416 was perfectly aligned with floor
+        this.holeShade = this.physics.add.image(0, 450, 'holeshading').setOrigin(0,0);
+        this.holeShade.body.allowGravity = false;
+        this.holeShade.setImmovable(true);
 
         //Physics Groups
         this.floorGroup = this.physics.add.group();
@@ -36,13 +40,13 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {floor.destroy();});
 
         //Initializing starting floor
-        this.floorGroup.create(0,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-        this.floorGroup.create(256,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-        this.floorGroup.create(512,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-        this.floorGroup.create(768,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(0, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(256, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(512, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(768, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
 
         //Creating repeating floor
-        this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+        this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
         var canHole = true;
         this.levelClockRepeat(canHole);
 
@@ -57,7 +61,18 @@ class Play extends Phaser.Scene {
         this.player.body.friction.x = 0;
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, this.floorGroup);
-        
+        this.physics.add.overlap(this.player, this.holeShade, () => {
+            this.scene.restart();
+        });
+
+        //rocket and floor collision
+        this.physics.add.overlap(this.rockets, this.floorGroup, () => {
+            var boomImage = this.add.image(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
+            this.rockets.blowUp();
+            this.boomImageClock = this.time.delayedCall(250, () => {
+                boomImage.destroy();
+            }, null, this);
+        });
 
     }
     
@@ -97,7 +112,7 @@ class Play extends Phaser.Scene {
             }
             else{
                 console.log("Placing floor");
-                this.floorGroup.create(1024,416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                 holeBool = true;
             }
             //repeat Clock
