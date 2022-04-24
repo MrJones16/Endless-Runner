@@ -61,7 +61,7 @@ class Play extends Phaser.Scene {
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
-        this.player = this.physics.add.sprite(game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100, 'player');
+        this.player = this.physics.add.sprite(120, 300, 'player');
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         this.crosshair.depth = 10;
         this.rockets = new Rockets(this);
@@ -79,10 +79,10 @@ class Play extends Phaser.Scene {
 
         this.explosion = this.physics.add.staticGroup();
 
-        // //rocket and floor collision
+        //rocket and floor collision
         this.physics.add.overlap(this.rockets, this.floorGroup, () => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
-                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
                 this.rockets.blowUp();
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
@@ -90,10 +90,10 @@ class Play extends Phaser.Scene {
             }   
         });
 
-        // //rocket and Obstacle collision
+        //rocket and Obstacle collision
         this.physics.add.overlap(this.rockets, this.obstacleGroup, (rocket, obstacle) => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
-                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
                 this.rockets.blowUp();
                 obstacle.destroy();
                 this.explosionClock = this.time.delayedCall(100, () => {
@@ -104,9 +104,18 @@ class Play extends Phaser.Scene {
         
 
         //player and explosion collision
-        this.physics.add.overlap(this.player, this.explosion, () => {
+        this.physics.add.overlap(this.player, this.explosion, (player, explosion) => {
             if (this.player.body.touching.down){
-                this.player.setVelocityY(-600);
+                //this.player.setVelocityY(-600);
+                //console.log(Phaser.Math.Between(this.player.x, 450, explosion.x, 450));
+                if ((explosion.x - 120) < 0){
+                    var absDist = -(explosion.x - 120);
+                } else {
+                    var absDist = explosion.x - 120;
+                }
+                console.log((168 - absDist) * -3.5);
+                //this.player.setVelocityY(Phaser.Math.Between(120, 450, explosion.x, 450) * -1.75);
+                this.player.setVelocityY((168 - absDist) * -3.5);
             }
         });
 
