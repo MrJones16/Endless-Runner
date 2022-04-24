@@ -113,6 +113,27 @@ class Play extends Phaser.Scene {
         
 
     }
+    
+    obstacleClockRepeat(){
+        if (this.obstacleClock != null)
+        this.obstacleClock.destroy();
+        this.obstacleClock = this.time.delayedCall(1000, () => {
+            var rnum = Phaser.Math.Between(0, 1);
+            switch (rnum){
+                case 0:
+                    //Helicopter
+
+                    break;
+                case 1:
+                    //nothing
+                    break;
+                default:
+                    console.warn("Obstacle Clock had default case!");
+                    break;
+            }
+            this.levelClockRepeat(holeBool);
+        }, null, this);
+    }
 
     levelClockRepeat(holeBool){
         if (this.levelGenerationClock != null)
