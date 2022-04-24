@@ -65,13 +65,24 @@ class Play extends Phaser.Scene {
             this.scene.restart();
         });
 
-        //rocket and floor collision
+        this.explosion = this.physics.add.staticGroup();
+
+        // //rocket and floor collision
         this.physics.add.overlap(this.rockets, this.floorGroup, () => {
-            var boomImage = this.add.image(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
-            this.rockets.blowUp();
-            this.boomImageClock = this.time.delayedCall(250, () => {
-                boomImage.destroy();
-            }, null, this);
+            if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
+                this.rockets.blowUp();
+                this.explosionClock = this.time.delayedCall(100, () => {
+                    this.explosion.clear(true);
+                }, null, this);
+            }   
+        });
+
+        //player and explosion collision
+        this.physics.add.overlap(this.player, this.explosion, () => {
+            if (this.player.body.touching.down){
+                this.player.setVelocityY(-600);
+            }
         });
 
     }
@@ -95,18 +106,19 @@ class Play extends Phaser.Scene {
             let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
             this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
             //TEMPORARY JUMP
-            if (this.player.body.touching.down){
-                this.player.setVelocityY(-600);
-            }
+            // if (this.player.body.touching.down){
+            //     this.player.setVelocityY(-600);
+            // }
         }, this);
         
+
     }
 
     levelClockRepeat(holeBool){
         if (this.levelGenerationClock != null)
         this.levelGenerationClock.destroy();
         this.levelGenerationClock = this.time.delayedCall(1000, () => {
-            if (Phaser.Math.Between(0, 4) == 0 && holeBool){
+            if (Phaser.Math.Between(0, 3) == 0 && holeBool){
                 console.log("Creating hole");
                 holeBool = false;
             }

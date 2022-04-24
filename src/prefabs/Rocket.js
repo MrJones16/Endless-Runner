@@ -34,7 +34,7 @@ class Rockets extends Phaser.Physics.Arcade.Group {
     constructor (scene){
         super(scene.physics.world, scene);
         this.createMultiple({
-            frameQuantity: 2,
+            frameQuantity: 1,
             key: 'rocket',
             active: false,
             visible: false,
