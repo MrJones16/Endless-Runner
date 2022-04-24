@@ -22,7 +22,7 @@ class Play extends Phaser.Scene {
     create(){
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
-        this.add.text(0, 0, "Play Scene");
+        this.add.text(0, 0, "Version 0.5");
 
         //create hole shading
         //y = 416 was perfectly aligned with floor
