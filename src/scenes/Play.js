@@ -16,6 +16,7 @@ class Play extends Phaser.Scene {
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
         this.load.image('explosion', './assets/test_explosion.png');
+        this.load.image('helicopter', './assets/test_helicopter.png');
       }
 
     create(){
@@ -31,6 +32,7 @@ class Play extends Phaser.Scene {
 
         //Physics Groups
         this.floorGroup = this.physics.add.group();
+        this.obstacleGroup = this.physics.add.group();
 
         //--Wall of death to destroy map and obstacles that go off screen
         this.wallOfDeath = this.physics.add.staticGroup();
@@ -38,6 +40,8 @@ class Play extends Phaser.Scene {
 
         //Physics Collisions
         this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {floor.destroy();});
+        this.physics.add.collider(this.obstacleGroup, this.wallOfDeath, (obstacle, wall) => {obstacle.destroy();});
+
 
         //Initializing starting floor
         this.floorGroup.create(0, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -49,6 +53,11 @@ class Play extends Phaser.Scene {
         this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
         var canHole = true;
         this.levelClockRepeat(canHole);
+
+        //start obstacle generation
+        this.obstacleTimer = 1000;
+        this.obstacleStartPosition = 1024;
+        this.obstacleClockRepeat();
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -65,6 +74,9 @@ class Play extends Phaser.Scene {
             this.scene.restart();
         });
 
+        //player and obstacle collision
+        this.physics.add.collider(this.player, this.obstacleGroup, () => {this.scene.restart();});
+
         this.explosion = this.physics.add.staticGroup();
 
         // //rocket and floor collision
@@ -77,6 +89,19 @@ class Play extends Phaser.Scene {
                 }, null, this);
             }   
         });
+
+        // //rocket and Obstacle collision
+        this.physics.add.overlap(this.rockets, this.obstacleGroup, (rocket, obstacle) => {
+            if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion');
+                this.rockets.blowUp();
+                obstacle.destroy();
+                this.explosionClock = this.time.delayedCall(100, () => {
+                    this.explosion.clear(true);
+                }, null, this);
+            }   
+        });
+        
 
         //player and explosion collision
         this.physics.add.overlap(this.player, this.explosion, () => {
@@ -117,21 +142,19 @@ class Play extends Phaser.Scene {
     obstacleClockRepeat(){
         if (this.obstacleClock != null)
         this.obstacleClock.destroy();
-        this.obstacleClock = this.time.delayedCall(1000, () => {
-            var rnum = Phaser.Math.Between(0, 1);
+        this.obstacleClock = this.time.delayedCall(this.obstacleTimer, () => {
+            var rnum = Phaser.Math.Between(0, 2);
             switch (rnum){
                 case 0:
                     //Helicopter
-
-                    break;
-                case 1:
-                    //nothing
+                    console.log("Spawning Helicopter");
+                    this.obstacleGroup.create(this.obstacleStartPosition+40, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 default:
-                    console.warn("Obstacle Clock had default case!");
+                    console.log("Spawning Nothing");
                     break;
             }
-            this.levelClockRepeat(holeBool);
+            this.obstacleClockRepeat();
         }, null, this);
     }
 
