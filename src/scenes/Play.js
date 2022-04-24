@@ -52,12 +52,23 @@ class Play extends Phaser.Scene {
         //Creating repeating floor
         this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
         var canHole = true;
-        this.levelClockRepeat(canHole);
+        this.levelClockRepeat(true);
 
         //start obstacle generation
-        this.obstacleTimer = 1000;
-        this.obstacleStartPosition = 1024;
+        this.obstacleTimer = 500;
+        this.afterfloor = true;
+        this.activeHole = false;
         this.obstacleClockRepeat();
+        this.obstacleTimer = 1000;
+        this.obstacleStartPosition = 1200;
+
+        //TWEAKABLE GAME SETTINGS
+        // each time an obstacle spawns, subtracts x miliseconds from spawn timer
+        this.obstacleTimeAcceleration = -5;
+        //
+        this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.
+        
+        
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -152,36 +163,54 @@ class Play extends Phaser.Scene {
         if (this.obstacleClock != null)
         this.obstacleClock.destroy();
         this.obstacleClock = this.time.delayedCall(this.obstacleTimer, () => {
-            var rnum = Phaser.Math.Between(0, 2);
+            var rnum = 0;
+            if (this.activeHole == false){
+                if (Phaser.Math.Between(0, 5) == 0){
+                    rnum = Phaser.Math.Between(0, 0);//Hole Obstacle Sets (should not have a higher domain than possible spawn)
+                } else{
+                    rnum = Phaser.Math.Between(3, 3);//No Hole Obstacle Sets
+                }
+            }else{
+                rnum = Phaser.Math.Between(3, 3);    //No Hole Obstacle Sets
+            }
+            
             switch (rnum){
                 case 0:
                     //Helicopter
+                    console.log("Spawning Helicopter with Hole");
+                    this.activeHole = true;
+                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    break;
+                case 3:
                     console.log("Spawning Helicopter");
-                    this.obstacleGroup.create(this.obstacleStartPosition+40, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 default:
                     console.log("Spawning Nothing");
                     break;
             }
+            if (this.obstacleTimer > this.obstacleTimerMinimum)
+            this.obstacleTimer += this.obstacleTimeAcceleration;
             this.obstacleClockRepeat();
         }, null, this);
     }
 
-    levelClockRepeat(holeBool){
+    levelClockRepeat(){
         if (this.levelGenerationClock != null)
         this.levelGenerationClock.destroy();
         this.levelGenerationClock = this.time.delayedCall(1000, () => {
-            if (Phaser.Math.Between(0, 3) == 0 && holeBool){
+            if (this.activeHole && this.afterfloor){
                 console.log("Creating hole");
-                holeBool = false;
+                this.afterfloor = false;
             }
             else{
                 console.log("Placing floor");
                 this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-                holeBool = true;
+                this.afterfloor = true;
+                this.activeHole = false;
             }
             //repeat Clock
-            this.levelClockRepeat(holeBool);
+            this.levelClockRepeat();
         }, null, this);
     }
     //shoot(angle, x, y) {
