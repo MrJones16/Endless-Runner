@@ -106,7 +106,11 @@ class Play extends Phaser.Scene {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
                 this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
                 this.rockets.blowUp();
+                if (obstacle.key == 'helicopter') {
+                    this.score += 100;
+                }
                 obstacle.destroy();
+                this.score += 100;
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
@@ -129,6 +133,24 @@ class Play extends Phaser.Scene {
                 this.player.setVelocityY((168 - absDist) * -3.5);
             }
         });
+
+        //Player score and points handling
+        this.score = 0;
+        let scoreConfig = {
+            fontSize: '28px',
+            fontStyle: 'bold',
+            color: '#000000',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.scoreText = this.add.text(520, 10, this.score, scoreConfig);
+        this.timePoints = 10;
+        this.timePointsRepeat();
+        this.timePointsIncrement();
 
     }
     
@@ -156,7 +178,29 @@ class Play extends Phaser.Scene {
             // }
         }, this);
         
+        //Update score every frame
+        this.scoreText.text = this.score;
 
+    }
+
+    // Steadily increases player score while playing
+    timePointsRepeat(){
+        if (this.timePointsClock != null)
+        this.timePointsClock.destroy();
+        this.timePointsClock = this.time.delayedCall(100, () => {
+            this.score += this.timePoints;
+            this.timePointsRepeat();
+        }, null, this);
+    }
+
+    // Increments score increase for staying alive
+    timePointsIncrement(){
+        if (this.pointIncrementClock != null)
+        this.pointIncrementClock.destroy();
+        this.pointIncrementClock = this.time.delayedCall(10000, () => {
+            this.timePoints += 10;
+            this.timePointsIncrement();
+        }, null, this);
     }
     
     obstacleClockRepeat(){
@@ -213,24 +257,4 @@ class Play extends Phaser.Scene {
             this.levelClockRepeat();
         }, null, this);
     }
-    //shoot(angle, x, y) {
-        //this.rocket = new Rocket(this, this.player.x, this.player.y, 'rocket');
-        //this.rocket = this.physics.add.sprite(this.player.x, this.player.y, 'rocket');
-        //this.rocket.rotation = angle;
-        //this.physics.moveTo(this.rocket, x, y, 1500);
-        //this.rocket.body.collideWorldBounds = true;
-        //this.rocket.body.onWorldBounds = true;
-
-        // this.physics.world.on('worldbounds', (body, up, down, left, right)=> {
-        //     if (up){
-        //         this.rocket.destroy();
-        //     }
-        // })
-        // var rocket = new Rocket({
-        //     scene: this.scene,
-        //     x: this.player.x,
-        //     y: this.player.y
-        // });
-        // rocket.rotation = angle;
-    //}
 }
