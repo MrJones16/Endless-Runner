@@ -150,8 +150,9 @@ class Play extends Phaser.Scene {
         this.scoreText = this.add.text(520, 10, this.score, scoreConfig);
         this.timePoints = 10;
         this.timePointsRepeat();
-        this.timePointsIncrement();
+        this.timePointsIncrement();    
 
+        this.canFire = true;
     }
     
     update() {
@@ -164,22 +165,29 @@ class Play extends Phaser.Scene {
         //LEVEL GEN END --------------------------
 
         //crosshair follows mouse
-        var pointer = this.input.activePointer;
+        let pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
         this.crosshair.y = pointer.y;
         //check for rocket shoot
         this.input.on('pointerdown', (pointer) => {
-            let thenPos = pointer;
-            let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
-            this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
-            //TEMPORARY JUMP
-            // if (this.player.body.touching.down){
-            //     this.player.setVelocityY(-600);
-            // }
+            if (this.canFire == true){
+                this.canFire = false;
+                let thenPos = pointer;
+                let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);         
+                this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
+                this.rocketFireClock = this.time.delayedCall(325, () => { this.canFire = true; }, null, this);
+            }
+                //TEMPORARY JUMP
+                // if (this.player.body.touching.down){
+                //     this.player.setVelocityY(-600);
+                // }
         }, this);
         
         //Update score every frame
         this.scoreText.text = this.score;
+
+        //Kill if X value changes
+        if (this.player.x != 120) {this.scene.restart();}
 
     }
 
@@ -223,11 +231,11 @@ class Play extends Phaser.Scene {
                     //Helicopter
                     console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
-                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 3:
                     console.log("Spawning Helicopter");
-                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 default:
                     console.log("Spawning Nothing");
