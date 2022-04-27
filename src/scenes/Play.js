@@ -11,14 +11,14 @@ class Play extends Phaser.Scene {
         this.load.image('player', './assets/test_player.png');
         this.load.image('rocket', './assets/test_rocket.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
-        this.load.image('background', './assets/background.png');
+        //this.load.image('background', './assets/background.png');
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
         this.load.image('explosion', './assets/test_explosion.png');
         this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
-      }
+    }
 
     create(){
         //Creating background tileSprite
@@ -83,11 +83,11 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, this.floorGroup);
         this.physics.add.overlap(this.player, this.holeShade, () => {
-            this.scene.restart();
+            this.scene.start('menuScene');
         });
 
         //player and obstacle collision
-        this.physics.add.collider(this.player, this.obstacleGroup, () => {this.scene.restart();});
+        this.physics.add.collider(this.player, this.obstacleGroup, () => {this.scene.start('menuScene');});
 
         this.explosion = this.physics.add.staticGroup();
 
@@ -280,8 +280,9 @@ class Play extends Phaser.Scene {
     heliShoot(heli){
         if (heli){
             //this.newBullet = this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
+            console.log(heli.x, heli.y);
             this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
-            //this.newBullet.scene.physics.moveTo(this.newBullet, heli.x + 100, 640, 1000);
+            //this.newBullet.scene.physics.moveTo(this.newBullet, heli.x - 100, 640, 1000);
             this.bulletClock = this.time.delayedCall(1000, () => {
                 this.heliShoot(heli);
             })
