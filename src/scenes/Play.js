@@ -17,6 +17,7 @@ class Play extends Phaser.Scene {
         this.load.image('holeshading', './assets/holeshading.png');
         this.load.image('explosion', './assets/test_explosion.png');
         this.load.image('helicopter', './assets/test_helicopter.png');
+        this.load.image('bullet', './assets/test_bullet.png');
       }
 
     create(){
@@ -98,6 +99,7 @@ class Play extends Phaser.Scene {
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
+                this.cameras.main.shake(100, 0.01);
             }   
         });
 
@@ -114,6 +116,7 @@ class Play extends Phaser.Scene {
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
+                this.cameras.main.shake(100, 0.0075);
             }   
         });
         
@@ -131,8 +134,14 @@ class Play extends Phaser.Scene {
                 console.log((168 - absDist) * -3.5);
                 //this.player.setVelocityY(Phaser.Math.Between(120, 450, explosion.x, 450) * -1.75);
                 this.player.setVelocityY((168 - absDist) * -3.5);
+                this.cameras.main.shake(100, 0.01);
             }
         });
+
+        //Bullet group and collisions
+        this.bulletGroup = this.physics.add.group();
+        this.physics.add.collider(this.player, this.bulletGroup, () => {this.scene.restart();});
+        this.physics.add.collider(this.obstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
 
         //Player score and points handling
         this.score = 0;
@@ -150,7 +159,9 @@ class Play extends Phaser.Scene {
         this.scoreText = this.add.text(520, 10, this.score, scoreConfig);
         this.timePoints = 10;
         this.timePointsRepeat();
-        this.timePointsIncrement();
+        this.timePointsIncrement();    
+
+        this.canFire = true;
 
     }
     
@@ -164,22 +175,30 @@ class Play extends Phaser.Scene {
         //LEVEL GEN END --------------------------
 
         //crosshair follows mouse
-        var pointer = this.input.activePointer;
+        let pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
         this.crosshair.y = pointer.y;
         //check for rocket shoot
         this.input.on('pointerdown', (pointer) => {
-            let thenPos = pointer;
-            let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);            
-            this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
-            //TEMPORARY JUMP
-            // if (this.player.body.touching.down){
-            //     this.player.setVelocityY(-600);
-            // }
+            if (this.canFire == true){
+                this.reloadText = this.add.text(10, 10, '[RELOADING]', { fontSize: '32px', fontStyle: 'bold', color: 'red' })
+                this.canFire = false;
+                let thenPos = pointer;
+                let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);         
+                this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
+                this.rocketFireClock = this.time.delayedCall(400, () => { this.canFire = true; this.reloadText.destroy() }, null, this);
+            }
+                //TEMPORARY JUMP
+                // if (this.player.body.touching.down){
+                //     this.player.setVelocityY(-600);
+                // }
         }, this);
         
         //Update score every frame
         this.scoreText.text = this.score;
+
+        //Kill if X value changes
+        if (this.player.x != 120) {this.scene.restart();}
 
     }
 
@@ -223,11 +242,11 @@ class Play extends Phaser.Scene {
                     //Helicopter
                     console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
-                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.heliShoot(this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false);
                     break;
                 case 3:
                     console.log("Spawning Helicopter");
-                    this.obstacleGroup.create(this.obstacleStartPosition, 200, 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.heliShoot(this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false);
                     break;
                 default:
                     console.log("Spawning Nothing");
@@ -256,5 +275,16 @@ class Play extends Phaser.Scene {
             //repeat Clock
             this.levelClockRepeat();
         }, null, this);
+    }
+
+    heliShoot(heli){
+        if (heli){
+            //this.newBullet = this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
+            this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
+            //this.newBullet.scene.physics.moveTo(this.newBullet, heli.x + 100, 640, 1000);
+            this.bulletClock = this.time.delayedCall(1000, () => {
+                this.heliShoot(heli);
+            })
+        }
     }
 }
