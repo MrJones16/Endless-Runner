@@ -116,7 +116,7 @@ class Play extends Phaser.Scene {
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
-                this.cameras.main.shake(100, 0.01);
+                this.cameras.main.shake(100, 0.0075);
             }   
         });
         
