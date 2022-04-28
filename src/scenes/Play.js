@@ -75,6 +75,13 @@ class Play extends Phaser.Scene {
 
         //TWEAKABLE GAME SETTINGS
         //
+        //Difficulty threshholds
+        //
+        //time in seconds to get to medium difficulty:
+        this.difficultyMediumThresh = 30;
+        //time in seconds to get to hard difficulty:
+        this.difficultyHardThresh = 60;
+        //
         // each time an obstacle spawns, subtracts x miliseconds from spawn timer
         //this.obstacleTimeAcceleration = 0;
         //
@@ -192,8 +199,11 @@ class Play extends Phaser.Scene {
 
         this.canFire = true;
 
-        //setting base value of difficulty to 3 (can't make lower)
+        //setting base value of difficulty settings(can't make lower)
+        this.difficultyLevelLower = 3;
         this.difficultyLevel = 5;
+        this.difficultyCounter = 0;
+
     }
     
     update() {
@@ -252,12 +262,12 @@ class Play extends Phaser.Scene {
             var rnum = 0;
             if (this.activeHole == false){
                 if (Phaser.Math.Between(0, 5) == 0){
-                    rnum = Phaser.Math.Between(0, 0);//Hole Obstacle Sets (should not have a higher domain than possible spawn)
+                    rnum = Phaser.Math.Between(0, 0);//Hole Obstacle Sets (should not have a higher domain than possible spawns)
                 } else{
-                    rnum = Phaser.Math.Between(3, this.difficultyLevel);//No Hole Obstacle Sets
+                    rnum = Phaser.Math.Between(this.difficultyLevelLower, this.difficultyLevel);//No Hole Obstacle Sets
                 }
             }else{
-                rnum = Phaser.Math.Between(3, this.difficultyLevel);    //No Hole Obstacle Sets
+                rnum = Phaser.Math.Between(this.difficultyLevelLower, this.difficultyLevel);    //No Hole Obstacle Sets
             }
             
             switch (rnum){
@@ -265,8 +275,8 @@ class Play extends Phaser.Scene {
                     //Helicopter with hole
                     console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
-                    let heliHole = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
-                    heliHole.body.allowGravity = false;
+                    let heliH = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliH.body.allowGravity = false;
                     break;
                 case 3:             //EASY OBSTACLES
                     //helicopter no hole
@@ -278,31 +288,71 @@ class Play extends Phaser.Scene {
                 case 4:
                     //tank
                     console.log("Spawning Tank");
-                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-50, 50), 352, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 5:
                     //sandbag
                     console.log("Spawning Sandbag");
-                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-50, 50), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 6:             //MEDIUM OBSTACLES
+                    //Heli with Sandbag
+                    let heliS = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliS.body.allowGravity = false;
+                    //helishoot
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 7:
+                    //sandbags and a tank
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition -20, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition+50, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+
                     break;
                 case 8:
+                    //tank and heli
+                    let heliT = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliT.body.allowGravity = false;
+                    //helishoot
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 9:             //HARD OBSTACLES
+                    //Helicopter with 2 sandbags
+                    let heli2S = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli2S.body.allowGravity = false;
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition -20, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition +40, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 10:
+                    //2 helicopters and a tank
+                    let heliD1 = this.obstacleGroup.create(this.obstacleStartPosition-40, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliD1.body.allowGravity = false;
+                    //helishoot
+                    let heliD2 = this.obstacleGroup.create(this.obstacleStartPosition+60, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliD2.body.allowGravity = false;
+                    //helishoot
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 11:
+                    //2 tanks and a helicopter
+                    this.obstacleGroup.create(this.obstacleStartPosition - 50, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + 60, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    let heli2T = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli2T.body.allowGravity = false;
+                    //helishoot
                     break;
                 default:
                     console.log("Spawning Nothing");
                     break;
             }
-            // if (this.obstacleTimer > this.obstacleTimerMinimum)     // speeding up spawning
-            // this.obstacleTimer += this.obstacleTimeAcceleration;
+            this.difficultyCounter++;
+            if (this.difficultyCounter == this.difficultyHardThresh){
+                //enable hard difficulty
+                this.difficultyLevelLower = 6
+                this.difficultyLevel = 11;
+            } else if (this.difficultyCounter == this.difficultyMediumThresh){
+                //enable medium difficulty
+                this.difficultyLevel = 8;
+            }
             this.obstacleClockRepeat();
         }, null, this);
     }
