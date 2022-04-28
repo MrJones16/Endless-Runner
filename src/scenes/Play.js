@@ -19,6 +19,7 @@ class Play extends Phaser.Scene {
         this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
         this.load.image('tank', './assets/TankRedrawn.png');
+        this.load.image('sandbags', './assets/sandbags.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
         
@@ -42,6 +43,7 @@ class Play extends Phaser.Scene {
         //Physics Groups
         this.floorGroup = this.physics.add.group();
         this.obstacleGroup = this.physics.add.group();
+        this.unbreakableObstacleGroup = this.physics.add.group();
 
         //--Wall of death to destroy map and obstacles that go off screen
         this.wallOfDeath = this.physics.add.staticGroup();
@@ -50,6 +52,7 @@ class Play extends Phaser.Scene {
         //Physics Collisions
         this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {floor.destroy();});
         this.physics.add.collider(this.obstacleGroup, this.wallOfDeath, (obstacle, wall) => {obstacle.destroy();});
+        this.physics.add.collider(this.unbreakableObstacleGroup, this.wallOfDeath, (uObstacle, wall) => {uObstacle.destroy();});
 
 
         //Initializing starting floor
@@ -60,7 +63,6 @@ class Play extends Phaser.Scene {
 
         //Creating repeating floor
         this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-        var canHole = true;
         this.levelClockRepeat(true);
 
         //start obstacle generation
@@ -72,10 +74,11 @@ class Play extends Phaser.Scene {
         this.obstacleStartPosition = 1200;
 
         //TWEAKABLE GAME SETTINGS
-        // each time an obstacle spawns, subtracts x miliseconds from spawn timer
-        this.obstacleTimeAcceleration = -5;
         //
-        this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
+        // each time an obstacle spawns, subtracts x miliseconds from spawn timer
+        //this.obstacleTimeAcceleration = 0;
+        //
+        //this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -94,6 +97,7 @@ class Play extends Phaser.Scene {
 
         //player and obstacle collision
         this.physics.add.collider(this.player, this.obstacleGroup, () => {this.scene.start('menuScene');});
+        this.physics.add.collider(this.player, this.unbreakableObstacleGroup, () => {this.scene.start('menuScene');});
 
         this.explosion = this.physics.add.staticGroup();
 
@@ -127,6 +131,21 @@ class Play extends Phaser.Scene {
                 this.cameras.main.shake(100, 0.0075);
             }   
         });
+        this.physics.add.overlap(this.rockets, this.unbreakableObstacleGroup, (rocket, obstacle) => {
+            if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosionSfx.play();
+                this.rockets.blowUp();
+                if (obstacle.key == 'helicopter') {
+                    this.score += 100;
+                }
+                this.score += 100;
+                this.explosionClock = this.time.delayedCall(100, () => {
+                    this.explosion.clear(true);
+                }, null, this);
+                this.cameras.main.shake(100, 0.0075);
+            }   
+        });
         
 
         //player and explosion collision
@@ -150,6 +169,8 @@ class Play extends Phaser.Scene {
         this.bulletGroup = this.physics.add.group();
         this.physics.add.collider(this.player, this.bulletGroup, () => {this.scene.restart();});
         this.physics.add.collider(this.obstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
+        this.physics.add.collider(this.unbreakableObstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
+        
 
         //Player score and points handling
         this.score = 0;
@@ -171,16 +192,13 @@ class Play extends Phaser.Scene {
 
         this.canFire = true;
 
+        //setting base value of difficulty to 3 (can't make lower)
+        this.difficultyLevel = 5;
     }
     
     update() {
-        //LEVEL GENERATION------------------------
         //update background
         this.background.tilePositionX += 1;
-
-        //Spawning enemies/obstacles
-
-        //LEVEL GEN END --------------------------
 
         //crosshair follows mouse
         let pointer = this.input.activePointer;
@@ -197,10 +215,6 @@ class Play extends Phaser.Scene {
                 this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
                 this.rocketFireClock = this.time.delayedCall(400, () => { this.canFire = true; this.reloadText.destroy() }, null, this);
             }
-                //TEMPORARY JUMP
-                // if (this.player.body.touching.down){
-                //     this.player.setVelocityY(-600);
-                // }
         }, this);
         
         //Update score every frame
@@ -240,29 +254,55 @@ class Play extends Phaser.Scene {
                 if (Phaser.Math.Between(0, 5) == 0){
                     rnum = Phaser.Math.Between(0, 0);//Hole Obstacle Sets (should not have a higher domain than possible spawn)
                 } else{
-                    rnum = Phaser.Math.Between(3, 3);//No Hole Obstacle Sets
+                    rnum = Phaser.Math.Between(3, this.difficultyLevel);//No Hole Obstacle Sets
                 }
             }else{
-                rnum = Phaser.Math.Between(3, 3);    //No Hole Obstacle Sets
+                rnum = Phaser.Math.Between(3, this.difficultyLevel);    //No Hole Obstacle Sets
             }
             
             switch (rnum){
                 case 0:
-                    //Helicopter
+                    //Helicopter with hole
                     console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
-                    this.heliShoot(this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false);
+                    let heliHole = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliHole.body.allowGravity = false;
                     break;
-                case 3:
+                case 3:             //EASY OBSTACLES
+                    //helicopter no hole
                     console.log("Spawning Helicopter");
-                    this.heliShoot(this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false);
+                    let heli = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli.body.allowGravity = false;
+                    //this.heliShoot(heli);
+                    break;
+                case 4:
+                    //tank
+                    console.log("Spawning Tank");
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-50, 50), 352, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    break;
+                case 5:
+                    //sandbag
+                    console.log("Spawning Sandbag");
+                    this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-50, 50), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    break;
+                case 6:             //MEDIUM OBSTACLES
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    break;
+                case 9:             //HARD OBSTACLES
+                    break;
+                case 10:
+                    break;
+                case 11:
                     break;
                 default:
                     console.log("Spawning Nothing");
                     break;
             }
-            if (this.obstacleTimer > this.obstacleTimerMinimum)
-            this.obstacleTimer += this.obstacleTimeAcceleration;
+            // if (this.obstacleTimer > this.obstacleTimerMinimum)     // speeding up spawning
+            // this.obstacleTimer += this.obstacleTimeAcceleration;
             this.obstacleClockRepeat();
         }, null, this);
     }
