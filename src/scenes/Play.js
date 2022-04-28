@@ -18,9 +18,15 @@ class Play extends Phaser.Scene {
         this.load.image('explosion', './assets/test_explosion.png');
         this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
+        this.load.audio('sfx_launch', './assets/rocket_launch.wav');
+        this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
     }
 
     create(){
+        //Sound add
+        this.explosionSfx = this.sound.add('sfx_explosion', {volume: 0.35});
+        this.launchSfx = this.sound.add('sfx_launch', {volume: 1.25});
+
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         this.add.text(0, 0, "Version 0.5");
@@ -67,9 +73,7 @@ class Play extends Phaser.Scene {
         // each time an obstacle spawns, subtracts x miliseconds from spawn timer
         this.obstacleTimeAcceleration = -5;
         //
-        this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.
-        
-        
+        this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -95,6 +99,7 @@ class Play extends Phaser.Scene {
         this.physics.add.overlap(this.rockets, this.floorGroup, () => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
                 this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosionSfx.play();
                 this.rockets.blowUp();
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
@@ -107,6 +112,7 @@ class Play extends Phaser.Scene {
         this.physics.add.overlap(this.rockets, this.obstacleGroup, (rocket, obstacle) => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
                 this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosionSfx.play();
                 this.rockets.blowUp();
                 if (obstacle.key == 'helicopter') {
                     this.score += 100;
@@ -184,7 +190,8 @@ class Play extends Phaser.Scene {
                 this.reloadText = this.add.text(10, 10, '[RELOADING]', { fontSize: '32px', fontStyle: 'bold', color: 'red' })
                 this.canFire = false;
                 let thenPos = pointer;
-                let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);         
+                let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);
+                this.launchSfx.play();
                 this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
                 this.rocketFireClock = this.time.delayedCall(400, () => { this.canFire = true; this.reloadText.destroy() }, null, this);
             }

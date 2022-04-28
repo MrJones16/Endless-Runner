@@ -16,3 +16,6 @@ let game = new Phaser.Game(config);
 let borderUISize = game.config.height / 15;
 let borderPadding = borderUISize / 3;
 let keyLEFT, keyRIGHT;
+
+// MOD: Background music variable
+var musicStarted = false;

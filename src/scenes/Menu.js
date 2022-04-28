@@ -7,9 +7,21 @@ class Menu extends Phaser.Scene {
         // load audio
         this.load.audio('sfx_select', './assets/blip_select12.wav');
         this.load.image('background', './assets/background.png');
+        this.load.audio('bgm', './assets/POL-rocket-station-short.wav');
       }
 
     create(){
+        // Play and loop background music
+        if (!musicStarted) {
+          let musicConfig = {
+              volume: 0.4,
+              loop: true
+          }
+          var bgm = this.sound.add('bgm', musicConfig);
+          bgm.play();
+          musicStarted = true;
+        }
+
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
         //this.scene.start("playScene");
         let menuConfig = {
