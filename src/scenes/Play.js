@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
         this.load.image('bullet', './assets/test_bullet.png');
         this.load.image('tank', './assets/TankRedrawn.png');
         this.load.image('sandbags', './assets/sandbags.png');
-        this.load.image('launcher', './assets/tank_shell.png');
+        this.load.image('launcher', './assets/launcher_smallcanvas.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
         
@@ -91,7 +91,7 @@ class Play extends Phaser.Scene {
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
         this.player = this.add.sprite(0, 0, 'player');
-        this.launcher = this.add.sprite(0, 0, 'launcher');
+        this.launcher = this.add.sprite(0, 10, 'launcher');
         this.playerCont = this.add.container(120, 300, [this.player, this.launcher]);
         this.playerCont.setSize(60, 60);
         this.physics.world.enable(this.playerCont);
@@ -104,12 +104,12 @@ class Play extends Phaser.Scene {
         //this.playerCont.setCollideWorldBounds(true);
         this.physics.add.collider(this.playerCont, this.floorGroup);
         this.physics.add.overlap(this.playerCont, this.holeShade, () => {
-            this.scene.start('menuScene');
+            this.scene.start('gameOverScene');
         });
 
         //player and obstacle collision
-        this.physics.add.collider(this.playerCont, this.obstacleGroup, () => {this.scene.start('menuScene');});
-        this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup, () => {this.scene.start('menuScene');});
+        this.physics.add.collider(this.playerCont, this.obstacleGroup, () => {this.scene.start('gameOverScene');});
+        this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup, () => {this.scene.start('gameOverScene');});
 
         this.explosion = this.physics.add.staticGroup();
 
@@ -132,11 +132,8 @@ class Play extends Phaser.Scene {
                 this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
                 this.explosionSfx.play();
                 this.rockets.blowUp();
-                if (obstacle.key == 'helicopter') {
-                    this.score += 100;
-                }
                 obstacle.destroy();
-                this.score += 100;
+                currScore += 100;
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
@@ -148,10 +145,6 @@ class Play extends Phaser.Scene {
                 this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
                 this.explosionSfx.play();
                 this.rockets.blowUp();
-                if (obstacle.key == 'helicopter') {
-                    this.score += 100;
-                }
-                this.score += 100;
                 this.explosionClock = this.time.delayedCall(100, () => {
                     this.explosion.clear(true);
                 }, null, this);
@@ -186,7 +179,7 @@ class Play extends Phaser.Scene {
         
 
         //Player score and points handling
-        this.score = 0;
+        currScore = 0;
         let scoreConfig = {
             fontSize: '28px',
             fontStyle: 'bold',
@@ -198,7 +191,7 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
-        this.scoreText = this.add.text(520, 10, this.score, scoreConfig);
+        this.scoreText = this.add.text(520, 10, currScore, scoreConfig);
         this.timePoints = 10;
         this.timePointsRepeat();
         this.timePointsIncrement();    
@@ -228,18 +221,18 @@ class Play extends Phaser.Scene {
                 let thenPos = pointer;
                 let angle = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y, thenPos.x, thenPos.y);
                 this.launchSfx.play();
-                this.rockets.fireRocket(angle, this.playerCont.x, this.playerCont.y, thenPos.x, thenPos.y);
+                this.rockets.fireRocket(angle, this.playerCont.x, this.playerCont.y + 10, thenPos.x, thenPos.y);
                 this.rocketFireClock = this.time.delayedCall(400, () => { this.canFire = true; this.reloadText.destroy() }, null, this);
             }
         }, this);
         
         //Update score every frame
-        this.scoreText.text = this.score;
+        this.scoreText.text = currScore;
 
         //Kill if X value changes
-        if (this.playerCont.x != 120) {this.scene.restart();}
+        if (this.playerCont.x != 120) {this.scene.start('gameOverScene');}
 
-        this.launcher.rotation = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y, pointer.x, pointer.y);
+        this.launcher.rotation = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y + 10, pointer.x, pointer.y);
         //this.launcher.x = this.player.x;
         //this.launcher.y = this.player.y;
         //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
@@ -252,7 +245,7 @@ class Play extends Phaser.Scene {
         if (this.timePointsClock != null)
         this.timePointsClock.destroy();
         this.timePointsClock = this.time.delayedCall(100, () => {
-            this.score += this.timePoints;
+            currScore += this.timePoints;
             this.timePointsRepeat();
         }, null, this);
     }

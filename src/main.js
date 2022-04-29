@@ -9,7 +9,7 @@ let config = {
         debug: false
       }
     },
-    scene: [Menu, Play]
+    scene: [Menu, Play, Instruction, GameOver]
   }
 
 let game = new Phaser.Game(config);
@@ -17,5 +17,9 @@ let borderUISize = game.config.height / 15;
 let borderPadding = borderUISize / 3;
 let keyLEFT, keyRIGHT;
 
-// MOD: Background music variable
+// High score variable
+var highScore = 0;
+var currScore = 0;
+
+// Background music variable
 var musicStarted = false;
