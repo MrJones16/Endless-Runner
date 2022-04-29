@@ -8,7 +8,7 @@ class Play extends Phaser.Scene {
         //examples
         //this.load.image('rocket', './assets/rocket.png');
         //this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
-        this.load.image('player', './assets/test_player.png');
+        this.load.image('player', './assets/test_player_nomove.png');
         this.load.image('rocket', './assets/missile.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
         //this.load.image('background', './assets/background.png');
@@ -20,6 +20,7 @@ class Play extends Phaser.Scene {
         this.load.image('bullet', './assets/test_bullet.png');
         this.load.image('tank', './assets/TankRedrawn.png');
         this.load.image('sandbags', './assets/sandbags.png');
+        this.load.image('launcher', './assets/tank_shell.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
         
@@ -89,22 +90,26 @@ class Play extends Phaser.Scene {
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
-        this.player = this.physics.add.sprite(120, 300, 'player');
+        this.player = this.add.sprite(0, 0, 'player');
+        this.launcher = this.add.sprite(0, 0, 'launcher');
+        this.playerCont = this.add.container(120, 300, [this.player, this.launcher]);
+        this.playerCont.setSize(60, 60);
+        this.physics.world.enable(this.playerCont);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         this.crosshair.depth = 10;
         this.rockets = new Rockets(this);
 
         //player and floor collision
-        this.player.body.friction.x = 0;
-        this.player.setCollideWorldBounds(true);
-        this.physics.add.collider(this.player, this.floorGroup);
-        this.physics.add.overlap(this.player, this.holeShade, () => {
+        this.playerCont.body.friction.x = 0;
+        //this.playerCont.setCollideWorldBounds(true);
+        this.physics.add.collider(this.playerCont, this.floorGroup);
+        this.physics.add.overlap(this.playerCont, this.holeShade, () => {
             this.scene.start('menuScene');
         });
 
         //player and obstacle collision
-        this.physics.add.collider(this.player, this.obstacleGroup, () => {this.scene.start('menuScene');});
-        this.physics.add.collider(this.player, this.unbreakableObstacleGroup, () => {this.scene.start('menuScene');});
+        this.physics.add.collider(this.playerCont, this.obstacleGroup, () => {this.scene.start('menuScene');});
+        this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup, () => {this.scene.start('menuScene');});
 
         this.explosion = this.physics.add.staticGroup();
 
@@ -156,8 +161,8 @@ class Play extends Phaser.Scene {
         
 
         //player and explosion collision
-        this.physics.add.overlap(this.player, this.explosion, (player, explosion) => {
-            if (this.player.body.touching.down){
+        this.physics.add.overlap(this.playerCont, this.explosion, (playerContainer, explosion) => {
+            if (playerContainer.body.touching.down){
                 //this.player.setVelocityY(-600);
                 //console.log(Phaser.Math.Between(this.player.x, 450, explosion.x, 450));
                 if ((explosion.x - 120) < 0){
@@ -165,16 +170,17 @@ class Play extends Phaser.Scene {
                 } else {
                     var absDist = explosion.x - 120;
                 }
-                console.log((168 - absDist) * -3.5);
+                //console.log((168 - absDist) * -3.5);
                 //this.player.setVelocityY(Phaser.Math.Between(120, 450, explosion.x, 450) * -1.75);
-                this.player.setVelocityY((168 - absDist) * -3.5);
+                //this.player.setVelocityY((168 - absDist) * -3.5);
+                playerContainer.body.setVelocityY((168 - absDist) * -3.5);
                 this.cameras.main.shake(100, 0.01);
             }
         });
 
         //Bullet group and collisions
         this.bulletGroup = this.physics.add.group();
-        this.physics.add.collider(this.player, this.bulletGroup, () => {this.scene.restart();});
+        this.physics.add.collider(this.playerCont, this.bulletGroup, () => {this.scene.restart();});
         this.physics.add.collider(this.obstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
         this.physics.add.collider(this.unbreakableObstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
         
@@ -220,9 +226,9 @@ class Play extends Phaser.Scene {
                 this.reloadText = this.add.text(10, 10, '[RELOADING]', { fontSize: '32px', fontStyle: 'bold', color: 'red' })
                 this.canFire = false;
                 let thenPos = pointer;
-                let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, thenPos.x, thenPos.y);
+                let angle = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y, thenPos.x, thenPos.y);
                 this.launchSfx.play();
-                this.rockets.fireRocket(angle, this.player.x, this.player.y, thenPos.x, thenPos.y);
+                this.rockets.fireRocket(angle, this.playerCont.x, this.playerCont.y, thenPos.x, thenPos.y);
                 this.rocketFireClock = this.time.delayedCall(400, () => { this.canFire = true; this.reloadText.destroy() }, null, this);
             }
         }, this);
@@ -231,7 +237,13 @@ class Play extends Phaser.Scene {
         this.scoreText.text = this.score;
 
         //Kill if X value changes
-        if (this.player.x != 120) {this.scene.restart();}
+        if (this.playerCont.x != 120) {this.scene.restart();}
+
+        this.launcher.rotation = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y, pointer.x, pointer.y);
+        //this.launcher.x = this.player.x;
+        //this.launcher.y = this.player.y;
+        //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
+        //console.log(aimAngle);
 
     }
 
