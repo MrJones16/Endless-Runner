@@ -5,8 +5,6 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        //examples
-        //this.load.image('rocket', './assets/rocket.png');
         //this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
         this.load.image('player', './assets/test_player_nomove.png');
         this.load.image('rocket', './assets/missile.png');
@@ -23,6 +21,7 @@ class Play extends Phaser.Scene {
         this.load.image('launcher', './assets/launcher_smallcanvas.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
+        this.load.atlas('playeranims', './assets/Player_Sprite_Move.png', './assets/Player_Sprite_Move.json');
         
     }
 
@@ -87,12 +86,50 @@ class Play extends Phaser.Scene {
         //
         //this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
 
+        // var p1 = this.textures.addSpriteSheetFromAtlas('playermove', {
+        //     atlas: 'playeranims',
+        //     frame: 'Player_Sprite_Move 0.aseprite',
+        //     frameWidth: 60,
+        //     frameHeight: 62,
+        //     endFrame: 3
+        // });
+        // var playerConfig = {
+        //     key: 'playermoving',
+        //     frames: this.anims.generateFrameNumbers('playermove', { start: 0, end: 3, first: 3 }),
+        //     frameRate: 20,
+        //     repeat: -1
+        // };
+
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNames('playeranims', {
+                prefix: 'Player_Sprite_Move ',
+                start: 1,
+                end: 2,
+                suffix: ".aseprite",
+            }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'jump',
+            frames: this.anims.generateFrameNames('playeranims', {
+                prefix: 'Player_Sprite_Move ',
+                start: 3,
+                end: 3,
+                suffix: ".aseprite",
+            }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
-        this.player = this.add.sprite(0, 0, 'player');
+        this.player = this.add.sprite(0, 0, 'playeranims', 'walk');
+        //this.player.play('walk');
         this.launcher = this.add.sprite(0, 10, 'launcher');
         this.playerCont = this.add.container(120, 300, [this.player, this.launcher]);
-        this.playerCont.setSize(60, 60);
+        this.playerCont.setSize(60, 62);
         this.physics.world.enable(this.playerCont);
         this.crosshair = new Crosshair(this, 0, 0, 'crosshair');
         this.crosshair.depth = 10;
@@ -236,6 +273,11 @@ class Play extends Phaser.Scene {
         //this.launcher.y = this.player.y;
         //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
         //console.log(aimAngle);
+
+        if (this.inAir && this.playerCont.body.touching.down){
+            this.player.play('walk');
+            this.inAir = false;
+        }
 
     }
 
