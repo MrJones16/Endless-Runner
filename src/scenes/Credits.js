@@ -37,7 +37,7 @@ class Credits extends Phaser.Scene{
         creditsConfig.align = 'left';
         this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding - 210, "Dominic Berardi --- Player, Rocket, and Menu Programming", creditsConfig);
         this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding - 150, "Peyton Jones --- Obstacle and Level Programming, Sprites", creditsConfig);
-        this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding - 90, "Diego Acevedo --- Sprites and Animation", creditsConfig);
+        this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding - 90, "Luis Acevedo --- Sprites and Animation", creditsConfig);
         this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding, "Music: “Rocket Station”, from PlayOnLoop.com", creditsConfig);
         this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding + 20, "Licensed under Creative Commons by Attribution 4.0", creditsConfig);
     }
