@@ -6,7 +6,7 @@ class Play extends Phaser.Scene {
 
     preload() {
         //this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
-        this.load.image('player', './assets/test_player_nomove.png');
+        //this.load.image('player', './assets/test_player_nomove.png');
         this.load.image('rocket', './assets/missile.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
         this.load.image('clouds', './assets/runner_bg_clouds.png')
@@ -17,7 +17,7 @@ class Play extends Phaser.Scene {
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
         this.load.image('explosion', './assets/test_explosion.png');
-        this.load.image('helicopter', './assets/test_helicopter.png');
+        //this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
         this.load.image('tank', './assets/TankRedrawn.png');
         this.load.image('sandbags', './assets/sandbags.png');
@@ -25,6 +25,7 @@ class Play extends Phaser.Scene {
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
         this.load.atlas('playeranims', './assets/Player_Sprite_Move.png', './assets/Player_Sprite_Move.json');
+        this.load.spritesheet('helicopter', './assets/helicopter-sheet.png', { frameWidth: 128, frameHeight: 64 });
         
     }
 
@@ -89,20 +90,7 @@ class Play extends Phaser.Scene {
         //
         //this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
 
-        // var p1 = this.textures.addSpriteSheetFromAtlas('playermove', {
-        //     atlas: 'playeranims',
-        //     frame: 'Player_Sprite_Move 0.aseprite',
-        //     frameWidth: 60,
-        //     frameHeight: 62,
-        //     endFrame: 3
-        // });
-        // var playerConfig = {
-        //     key: 'playermoving',
-        //     frames: this.anims.generateFrameNumbers('playermove', { start: 0, end: 3, first: 3 }),
-        //     frameRate: 20,
-        //     repeat: -1
-        // };
-
+        // Create animations
         this.anims.create({
             key: 'walk',
             frames: this.anims.generateFrameNames('playeranims', {
@@ -125,6 +113,12 @@ class Play extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
+        this.anims.create({
+            key: 'fly',
+            frames: this.anims.generateFrameNumbers('helicopter', {frames: [0, 1, 2]}),
+            frameRate: 30,
+            repeat: -1
+        })
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -327,12 +321,14 @@ class Play extends Phaser.Scene {
                     console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
                     let heliH = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliH.play('fly');
                     heliH.body.allowGravity = false;
                     break;
                 case 3:             //EASY OBSTACLES
                     //helicopter no hole
                     console.log("Spawning Helicopter");
                     let heli = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli.play('fly');
                     heli.body.allowGravity = false;
                     //this.heliShoot(heli);
                     break;
@@ -349,6 +345,7 @@ class Play extends Phaser.Scene {
                 case 6:             //MEDIUM OBSTACLES
                     //Heli with Sandbag
                     let heliS = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliS.play('fly');
                     heliS.body.allowGravity = false;
                     //helishoot
                     this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -362,6 +359,7 @@ class Play extends Phaser.Scene {
                 case 8:
                     //tank and heli
                     let heliT = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliT.play('fly');
                     heliT.body.allowGravity = false;
                     //helishoot
                     this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -369,6 +367,7 @@ class Play extends Phaser.Scene {
                 case 9:             //HARD OBSTACLES
                     //Helicopter with 2 sandbags
                     let heli2S = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli2S.play('fly');
                     heli2S.body.allowGravity = false;
                     this.unbreakableObstacleGroup.create(this.obstacleStartPosition -20, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     this.unbreakableObstacleGroup.create(this.obstacleStartPosition +40, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -376,9 +375,11 @@ class Play extends Phaser.Scene {
                 case 10:
                     //2 helicopters and a tank
                     let heliD1 = this.obstacleGroup.create(this.obstacleStartPosition-40, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliD1.play('fly');
                     heliD1.body.allowGravity = false;
                     //helishoot
                     let heliD2 = this.obstacleGroup.create(this.obstacleStartPosition+60, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heliD2.play('fly');
                     heliD2.body.allowGravity = false;
                     //helishoot
                     this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -388,6 +389,7 @@ class Play extends Phaser.Scene {
                     this.obstacleGroup.create(this.obstacleStartPosition - 50, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     this.obstacleGroup.create(this.obstacleStartPosition + 60, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     let heli2T = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
+                    heli2T.play('fly');
                     heli2T.body.allowGravity = false;
                     //helishoot
                     break;
