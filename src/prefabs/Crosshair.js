@@ -4,10 +4,4 @@ class Crosshair extends Phaser.GameObjects.Sprite {
         //adds object to existing scene
         scene.add.existing(this);
     }
-    update() {
-    
-    }
-    reset() {
-
-    }
 }

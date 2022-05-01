@@ -23,12 +23,11 @@ class Menu extends Phaser.Scene {
         }
 
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
-        //this.scene.start("playScene");
         let menuConfig = {
             fontFamily: 'Rockwell',
             fontSize: '48px',
             fontStyle: 'bold',
-            color: 'dimgray',
+            color: 'lightsteelblue',
             stroke: 'black',
             strokeThickness: 5,
             align: 'middle',
@@ -56,9 +55,5 @@ class Menu extends Phaser.Scene {
         this.creditsButton = this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding + 175, "Credits", menuConfig).setOrigin(0.5).setInteractive();
         this.creditsButton.on('pointerdown', () => { this.scene.start('creditsScene'); })
         this.add.text(game.config.width/2 + 200, game.config.height/2 + borderUISize + borderPadding + 175, "Version 1.0");
-    }
-
-    update() {
-       
     }
 }

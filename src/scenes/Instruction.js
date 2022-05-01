@@ -3,6 +3,7 @@ class Instruction extends Phaser.Scene{
         super("instructionScene");
     }
     create(){
+        // Back button
         let backConfig = {
           fontFamily: 'Rockwell',
           fontSize: '48px',

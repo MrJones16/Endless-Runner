@@ -5,21 +5,14 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        //this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
-        //this.load.image('player', './assets/test_player_nomove.png');
         this.load.image('rocket', './assets/missile.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
         this.load.image('clouds', './assets/runner_bg_clouds.png')
         this.load.image('sun', './assets/runner_bg_sun.png');
         this.load.image('mountains', './assets/runner_bg_mnt (no filter).png')
-        //this.load.image('background', './assets/background.png');
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
-        //this.load.image('explosion', './assets/test_explosion.png');
-        //this.load.image('helicopter', './assets/test_helicopter.png');
-        this.load.image('bullet', './assets/test_bullet.png');
-        //this.load.image('tank', './assets/TankRedrawn.png');
         this.load.image('sandbags', './assets/sandbags.png');
         this.load.image('launcher', './assets/launcher_smallcanvas.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
@@ -35,14 +28,12 @@ class Play extends Phaser.Scene {
         this.explosionSfx = this.sound.add('sfx_explosion', {volume: 0.25});
         this.launchSfx = this.sound.add('sfx_launch', {volume: 0.75});
 
-        //Creating background tileSprite
-        //this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
+        //Creating background tileSprites
         this.add.tileSprite(0, 0, 640, 480, 'sun').setOrigin(0, 0);
         this.bgMountains = this.add.tileSprite(0, 0, 640, 480, 'mountains').setOrigin(0, 0);
         this.bgClouds = this.add.tileSprite(0, 0, 640, 480, 'clouds').setOrigin(0, 0).setAlpha(0.75);
 
         //create hole shading
-        //y = 416 was perfectly aligned with floor
         this.holeShade = this.physics.add.image(0, 450, 'holeshading').setOrigin(0,0);
         this.holeShade.body.allowGravity = false;
         this.holeShade.setImmovable(true);
@@ -60,7 +51,6 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.floorGroup, this.wallOfDeath, (floor, wall) => {floor.destroy();});
         this.physics.add.collider(this.obstacleGroup, this.wallOfDeath, (obstacle, wall) => {obstacle.destroy();});
         this.physics.add.collider(this.unbreakableObstacleGroup, this.wallOfDeath, (uObstacle, wall) => {uObstacle.destroy();});
-
 
         //Initializing starting floor
         this.floorGroup.create(0, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
@@ -82,17 +72,12 @@ class Play extends Phaser.Scene {
 
         //TWEAKABLE GAME SETTINGS
         //
-        //Difficulty threshholds
+        //Difficulty thresholds
         //
         //time in seconds to get to medium difficulty:
         this.difficultyMediumThresh = 30;
         //time in seconds to get to hard difficulty:
-        this.difficultyHardThresh = 60;
-        //
-        // each time an obstacle spawns, subtracts x miliseconds from spawn timer
-        //this.obstacleTimeAcceleration = 0;
-        //
-        //this.obstacleTimerMinimum = 200; //min amount of ms that must be waited to spawn another obstacle.  
+        this.difficultyHardThresh = 60;  
 
         // Create animations
         this.anims.create({
@@ -142,9 +127,7 @@ class Play extends Phaser.Scene {
         })
 
         //Creating player, crosshair, and rockets
-        //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
-        this.player = this.add.sprite(0, 0, 'playeranims', 'walk');
-        //this.player.play('walk');
+        this.player = this.add.sprite(0, 0, 'playeranims');
         this.launcher = this.add.sprite(0, 10, 'launcher');
         this.playerCont = this.add.container(120, 300, [this.player, this.launcher]);
         this.playerCont.setSize(60, 62);
@@ -155,7 +138,6 @@ class Play extends Phaser.Scene {
 
         //player and floor collision
         this.playerCont.body.friction.x = 0;
-        //this.playerCont.setCollideWorldBounds(true);
         this.physics.add.collider(this.playerCont, this.floorGroup);
         this.physics.add.overlap(this.playerCont, this.holeShade, () => {
             this.scene.start('gameOverScene');
@@ -165,6 +147,7 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.playerCont, this.obstacleGroup, () => {this.scene.start('gameOverScene');});
         this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup);
 
+        //Explosion group
         this.explosion = this.physics.add.staticGroup();
 
         //rocket and floor collision
@@ -205,39 +188,26 @@ class Play extends Phaser.Scene {
                 this.cameras.main.shake(100, 0.0075);
             }   
         });
-        
 
         //player and explosion collision
         this.physics.add.overlap(this.playerCont, this.explosion, (playerContainer, explosion) => {
             if (playerContainer.body.touching.down){
-                //this.player.setVelocityY(-600);
-                //console.log(Phaser.Math.Between(this.player.x, 450, explosion.x, 450));
                 if ((explosion.x - 120) < 0){
                     var absDist = -(explosion.x - 120);
                 } else {
                     var absDist = explosion.x - 120;
                 }
-                //console.log((168 - absDist) * -3.5);
-                //this.player.setVelocityY(Phaser.Math.Between(120, 450, explosion.x, 450) * -1.75);
-                //this.player.setVelocityY((168 - absDist) * -3.5);
                 playerContainer.body.setVelocityY((168 - absDist) * -3.5);
                 this.cameras.main.shake(100, 0.01);
             }
-        });
-
-        //Bullet group and collisions
-        this.bulletGroup = this.physics.add.group();
-        this.physics.add.collider(this.playerCont, this.bulletGroup, () => {this.scene.restart();});
-        this.physics.add.collider(this.obstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
-        this.physics.add.collider(this.unbreakableObstacleGroup, this.bulletGroup, (obstacle, bullet) => {bullet.destroy();});
-        
+        }); 
 
         //Player score and points handling
         currScore = 0;
         let scoreConfig = {
             fontSize: '28px',
             fontStyle: 'bold',
-            color: '#000000',
+            color: 'deepskyblue',
             align: 'right',
             padding: {
                 top: 5,
@@ -260,8 +230,7 @@ class Play extends Phaser.Scene {
     }
     
     update() {
-        //update background
-        //this.background.tilePositionX += 1;
+        //update backgrounds (parallax scrolling)
         this.bgMountains.tilePositionX += 1;
         this.bgClouds.tilePositionX += 0.5;
 
@@ -288,11 +257,10 @@ class Play extends Phaser.Scene {
         //Kill if X value changes
         if (this.playerCont.x != 120) {this.scene.start('gameOverScene');}
 
+        //Launcher aim direction
         this.launcher.rotation = Phaser.Math.Angle.Between(this.playerCont.x, this.playerCont.y + 10, pointer.x, pointer.y);
-        //this.launcher.x = this.player.x;
-        //this.launcher.y = this.player.y;
-        //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
-        //console.log(aimAngle);
+
+        //Jump vs walk animation
         if (this.playerCont.y <= 330){
             this.player.play('jump');
             this.inAir = true;
@@ -323,6 +291,7 @@ class Play extends Phaser.Scene {
         }, null, this);
     }
     
+    // Spawns obstacles; over time gets more difficult
     obstacleClockRepeat(){
         if (this.obstacleClock != null)
         this.obstacleClock.destroy();
@@ -341,7 +310,6 @@ class Play extends Phaser.Scene {
             switch (rnum){
                 case 0:
                     //Helicopter with hole
-                    console.log("Spawning Helicopter with Hole");
                     this.activeHole = true;
                     let heliH = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
                     heliH.play('fly');
@@ -349,7 +317,6 @@ class Play extends Phaser.Scene {
                     break;
                 case 3:             //EASY OBSTACLES
                     //helicopter no hole
-                    console.log("Spawning Helicopter");
                     let heli = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
                     heli.play('fly');
                     heli.body.allowGravity = false;
@@ -357,12 +324,10 @@ class Play extends Phaser.Scene {
                     break;
                 case 4:
                     //tank
-                    console.log("Spawning Tank");
                     this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 5:
                     //sandbag
-                    console.log("Spawning Sandbag");
                     this.unbreakableObstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 6:             //MEDIUM OBSTACLES
@@ -417,7 +382,6 @@ class Play extends Phaser.Scene {
                     //helishoot
                     break;
                 default:
-                    console.log("Spawning Nothing");
                     break;
             }
             this.difficultyCounter++;
@@ -433,16 +397,15 @@ class Play extends Phaser.Scene {
         }, null, this);
     }
 
+    // Hole generation loop
     levelClockRepeat(){
         if (this.levelGenerationClock != null)
         this.levelGenerationClock.destroy();
         this.levelGenerationClock = this.time.delayedCall(1000, () => {
             if (this.activeHole && this.afterfloor){
-                console.log("Creating hole");
                 this.afterfloor = false;
             }
             else{
-                console.log("Placing floor");
                 this.floorGroup.create(1024, 416, 'floor').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                 this.afterfloor = true;
                 this.activeHole = false;
@@ -450,17 +413,5 @@ class Play extends Phaser.Scene {
             //repeat Clock
             this.levelClockRepeat();
         }, null, this);
-    }
-
-    heliShoot(heli){
-        if (heli){
-            //this.newBullet = this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
-            console.log(heli.x, heli.y);
-            this.bulletGroup.create(heli.x, heli.y, 'bullet').setOrigin(0,0).body.allowGravity = false;
-            //this.newBullet.scene.physics.moveTo(this.newBullet, heli.x - 100, 640, 1000);
-            this.bulletClock = this.time.delayedCall(1000, () => {
-                this.heliShoot(heli);
-            })
-        }
     }
 }

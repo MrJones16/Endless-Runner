@@ -22,12 +22,6 @@ class Rocket extends Phaser.Physics.Arcade.Sprite {
             this.setVisible(false);
         }
     }
-    //update() {
-    
-    //}
-    //reset() {
-
-    //}
 }
 
 class Rockets extends Phaser.Physics.Arcade.Group {

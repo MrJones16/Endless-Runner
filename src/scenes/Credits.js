@@ -3,6 +3,7 @@ class Credits extends Phaser.Scene{
         super("creditsScene");
     }
     create(){
+        // Back button
         let backConfig = {
             fontFamily: 'Rockwell',
             fontSize: '48px',
