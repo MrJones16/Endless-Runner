@@ -1,0 +1,34 @@
+{ "frames": {
+   "TankRedrawn 0.png": {
+    "frame": { "x": 0, "y": 0, "w": 121, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 121, "h": 54 },
+    "sourceSize": { "w": 121, "h": 54 },
+    "duration": 100
+   },
+   "TankRedrawn 1.png": {
+    "frame": { "x": 121, "y": 0, "w": 121, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 121, "h": 54 },
+    "sourceSize": { "w": 121, "h": 54 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.34.1-x64",
+  "image": "TankRedrawn-sheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 242, "h": 54 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
