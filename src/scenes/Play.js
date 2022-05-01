@@ -142,7 +142,7 @@ class Play extends Phaser.Scene {
 
         //player and obstacle collision
         this.physics.add.collider(this.playerCont, this.obstacleGroup, () => {this.scene.start('gameOverScene');});
-        this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup, () => {this.scene.start('gameOverScene');});
+        this.physics.add.collider(this.playerCont, this.unbreakableObstacleGroup);
 
         this.explosion = this.physics.add.staticGroup();
 
@@ -270,7 +270,7 @@ class Play extends Phaser.Scene {
         //this.launcher.y = this.player.y;
         //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
         //console.log(aimAngle);
-        if (this.playerCont.y <= 370){
+        if (this.playerCont.y <= 330){
             this.player.play('jump');
             this.inAir = true;
         } else if (this.inAir){
