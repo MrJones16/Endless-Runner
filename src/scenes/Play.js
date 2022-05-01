@@ -28,12 +28,11 @@ class Play extends Phaser.Scene {
 
     create(){
         //Sound add
-        this.explosionSfx = this.sound.add('sfx_explosion', {volume: 0.35});
-        this.launchSfx = this.sound.add('sfx_launch', {volume: 1.25});
+        this.explosionSfx = this.sound.add('sfx_explosion', {volume: 0.25});
+        this.launchSfx = this.sound.add('sfx_launch', {volume: 0.75});
 
         //Creating background tileSprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
-        this.add.text(0, 0, "Version 0.5");
 
         //create hole shading
         //y = 416 was perfectly aligned with floor

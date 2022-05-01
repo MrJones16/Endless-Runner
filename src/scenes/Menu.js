@@ -14,7 +14,7 @@ class Menu extends Phaser.Scene {
         // Play and loop background music
         if (!musicStarted) {
           let musicConfig = {
-              volume: 0.4,
+              volume: 0.25,
               loop: true
           }
           var bgm = this.sound.add('bgm', musicConfig);
@@ -51,7 +51,11 @@ class Menu extends Phaser.Scene {
         menuConfig.color = "red";
         this.exitButton = this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding + 150, "Exit", menuConfig).setOrigin(0.5).setInteractive();
         this.exitButton.on('pointerdown', () => { game.destroy(); })
-
+        menuConfig.color = "darkorchid";
+        menuConfig.fontSize = '20px';
+        this.creditsButton = this.add.text(game.config.width/2 - 275, game.config.height/2 + borderUISize + borderPadding + 175, "Credits", menuConfig).setOrigin(0.5).setInteractive();
+        this.creditsButton.on('pointerdown', () => { this.scene.start('creditsScene'); })
+        this.add.text(game.config.width/2 + 200, game.config.height/2 + borderUISize + borderPadding + 175, "Version 1.0");
     }
 
     update() {
