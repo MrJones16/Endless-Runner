@@ -19,13 +19,14 @@ class Play extends Phaser.Scene {
         this.load.image('explosion', './assets/test_explosion.png');
         //this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
-        this.load.image('tank', './assets/TankRedrawn.png');
+        //this.load.image('tank', './assets/TankRedrawn.png');
         this.load.image('sandbags', './assets/sandbags.png');
         this.load.image('launcher', './assets/launcher_smallcanvas.png');
         this.load.audio('sfx_launch', './assets/rocket_launch.wav');
         this.load.audio('sfx_explosion', './assets/rocket_explosion.wav');
         this.load.atlas('playeranims', './assets/Player_Sprite_Move.png', './assets/Player_Sprite_Move.json');
         this.load.spritesheet('helicopter', './assets/helicopter-sheet.png', { frameWidth: 128, frameHeight: 64 });
+        this.load.spritesheet('tank', './assets/TankRedrawn-sheet.png', { frameWidth: 121, frameHeight: 54 });
         
     }
 
@@ -117,6 +118,12 @@ class Play extends Phaser.Scene {
             key: 'fly',
             frames: this.anims.generateFrameNumbers('helicopter', {frames: [0, 1, 2]}),
             frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'tread',
+            frames: this.anims.generateFrameNumbers('tank', {frames: [0, 1]}),
+            frameRate: 10,
             repeat: -1
         })
 
@@ -335,7 +342,7 @@ class Play extends Phaser.Scene {
                 case 4:
                     //tank
                     console.log("Spawning Tank");
-                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 5:
                     //sandbag
@@ -353,7 +360,7 @@ class Play extends Phaser.Scene {
                 case 7:
                     //sandbags and a tank
                     this.unbreakableObstacleGroup.create(this.obstacleStartPosition -20, 382, 'sandbags').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-                    this.obstacleGroup.create(this.obstacleStartPosition+50, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition+50, 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
 
                     break;
                 case 8:
@@ -362,7 +369,7 @@ class Play extends Phaser.Scene {
                     heliT.play('fly');
                     heliT.body.allowGravity = false;
                     //helishoot
-                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 9:             //HARD OBSTACLES
                     //Helicopter with 2 sandbags
@@ -382,12 +389,12 @@ class Play extends Phaser.Scene {
                     heliD2.play('fly');
                     heliD2.body.allowGravity = false;
                     //helishoot
-                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + Phaser.Math.Between(-40, 40), 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     break;
                 case 11:
                     //2 tanks and a helicopter
-                    this.obstacleGroup.create(this.obstacleStartPosition - 50, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
-                    this.obstacleGroup.create(this.obstacleStartPosition + 60, 362, 'tank').setOrigin(0,0).setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition - 50, 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
+                    this.obstacleGroup.create(this.obstacleStartPosition + 60, 362, 'tank').setOrigin(0,0).play('tread').setVelocityX(-250).setImmovable(true).body.allowGravity = false;
                     let heli2T = this.obstacleGroup.create(this.obstacleStartPosition, Phaser.Math.Between(125, 250), 'helicopter').setOrigin(0,0).setVelocityX(-250).setImmovable(true);
                     heli2T.play('fly');
                     heli2T.body.allowGravity = false;
