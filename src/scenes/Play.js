@@ -273,8 +273,10 @@ class Play extends Phaser.Scene {
         //this.launcher.y = this.player.y;
         //let aimAngle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.x, pointer.y));
         //console.log(aimAngle);
-
-        if (this.inAir && this.playerCont.body.touching.down){
+        if (this.playerCont.y <= 370){
+            this.player.play('jump');
+            this.inAir = true;
+        } else if (this.inAir){
             this.player.play('walk');
             this.inAir = false;
         }
