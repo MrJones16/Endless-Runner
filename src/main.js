@@ -29,8 +29,10 @@
 // The two sprites appear as one-- and are coded similarly, in a single container-- 
 // but can still be visually manipulated independent of each other.
 // Thus, the player can be running and jumping while the launcher has full range of movement.
-
-
+//
+// As far as the music, it is indeed royalty-free, we did not make it.
+// However, we did edit it to be a shortened loop of the first ~15 seconds of the original song.
+// So, some artistic changes were taken. The citation for the song is in the credits in-game.
 
 let config = {
     type: Phaser.CANVAS,

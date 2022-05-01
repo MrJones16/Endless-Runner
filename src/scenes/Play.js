@@ -36,7 +36,10 @@ class Play extends Phaser.Scene {
         this.launchSfx = this.sound.add('sfx_launch', {volume: 0.75});
 
         //Creating background tileSprite
-        this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
+        //this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0);
+        this.add.tileSprite(0, 0, 640, 480, 'sun').setOrigin(0, 0);
+        this.bgMountains = this.add.tileSprite(0, 0, 640, 480, 'mountains').setOrigin(0, 0);
+        this.bgClouds = this.add.tileSprite(0, 0, 640, 480, 'clouds').setOrigin(0, 0).setAlpha(0.75);
 
         //create hole shading
         //y = 416 was perfectly aligned with floor
@@ -258,7 +261,9 @@ class Play extends Phaser.Scene {
     
     update() {
         //update background
-        this.background.tilePositionX += 1;
+        //this.background.tilePositionX += 1;
+        this.bgMountains.tilePositionX += 1;
+        this.bgClouds.tilePositionX += 0.5;
 
         //crosshair follows mouse
         let pointer = this.input.activePointer;
