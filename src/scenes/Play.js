@@ -9,6 +9,9 @@ class Play extends Phaser.Scene {
         this.load.image('player', './assets/test_player_nomove.png');
         this.load.image('rocket', './assets/missile.png');
         this.load.image('crosshair', './assets/test_crosshair.png');
+        this.load.image('clouds', './assets/runner_bg_clouds.png')
+        this.load.image('sun', './assets/runner_bg_sun.png');
+        this.load.image('mountains', './assets/runner_bg_mnt (no filter).png')
         //this.load.image('background', './assets/background.png');
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
