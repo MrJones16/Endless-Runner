@@ -16,7 +16,7 @@ class Play extends Phaser.Scene {
         this.load.image('floor', './assets/floor.png');
         this.load.image('wallofdeath', './assets/wallofdeath.png');
         this.load.image('holeshading', './assets/holeshading.png');
-        this.load.image('explosion', './assets/test_explosion.png');
+        //this.load.image('explosion', './assets/test_explosion.png');
         //this.load.image('helicopter', './assets/test_helicopter.png');
         this.load.image('bullet', './assets/test_bullet.png');
         //this.load.image('tank', './assets/TankRedrawn.png');
@@ -27,7 +27,7 @@ class Play extends Phaser.Scene {
         this.load.atlas('playeranims', './assets/Player_Sprite_Move.png', './assets/Player_Sprite_Move.json');
         this.load.spritesheet('helicopter', './assets/helicopter-sheet.png', { frameWidth: 128, frameHeight: 64 });
         this.load.spritesheet('tank', './assets/TankRedrawn-sheet.png', { frameWidth: 121, frameHeight: 54 });
-        
+        this.load.atlas('explosionanims', './assets/explosion_anim.png', './assets/explosion_anim.json');
     }
 
     create(){
@@ -126,6 +126,17 @@ class Play extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         })
+        this.anims.create({
+            key: 'boom',
+            frames: this.anims.generateFrameNames('explosionanims', {
+                prefix: 'explosion_anim ',
+                start: 0,
+                end: 12,
+                suffix: ".aseprite",
+                zeroPad: 2
+            }),
+            frameRate: 100,
+        })
 
         //Creating player, crosshair, and rockets
         //this.player = new Player(this, game.config.width / 2 - 200, game.config.height - borderUISize - borderPadding - 100).setOrigin(0.5, 0.5);
@@ -156,7 +167,7 @@ class Play extends Phaser.Scene {
         //rocket and floor collision
         this.physics.add.overlap(this.rockets, this.floorGroup, () => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
-                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosionanims').setOrigin(0.5, 0.5).play('boom');
                 this.explosionSfx.play();
                 this.rockets.blowUp();
                 this.explosionClock = this.time.delayedCall(100, () => {
@@ -169,7 +180,7 @@ class Play extends Phaser.Scene {
         //rocket and Obstacle collision
         this.physics.add.overlap(this.rockets, this.obstacleGroup, (rocket, obstacle) => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
-                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosionanims').setOrigin(0.5, 0.5).play('boom');
                 this.explosionSfx.play();
                 this.rockets.blowUp();
                 obstacle.destroy();
@@ -182,7 +193,7 @@ class Play extends Phaser.Scene {
         });
         this.physics.add.overlap(this.rockets, this.unbreakableObstacleGroup, (rocket, obstacle) => {
             if ((this.rockets.rocketX() > 0) && (this.rockets.rocketY() > 0)){
-                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosion').setOrigin(0.5, 0.5);
+                this.explosion.create(this.rockets.rocketX(), this.rockets.rocketY(), 'explosionanims').setOrigin(0.5, 0.5).play('boom');
                 this.explosionSfx.play();
                 this.rockets.blowUp();
                 this.explosionClock = this.time.delayedCall(100, () => {
