@@ -1,0 +1,126 @@
+{ "frames": {
+   "explosion_anim 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 1.aseprite": {
+    "frame": { "x": 68, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 2.aseprite": {
+    "frame": { "x": 136, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 3.aseprite": {
+    "frame": { "x": 204, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 4.aseprite": {
+    "frame": { "x": 272, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 5.aseprite": {
+    "frame": { "x": 340, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 6.aseprite": {
+    "frame": { "x": 408, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 7.aseprite": {
+    "frame": { "x": 476, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 8.aseprite": {
+    "frame": { "x": 544, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 9.aseprite": {
+    "frame": { "x": 612, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 10.aseprite": {
+    "frame": { "x": 680, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 11.aseprite": {
+    "frame": { "x": 748, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   },
+   "explosion_anim 12.aseprite": {
+    "frame": { "x": 816, "y": 0, "w": 68, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 68, "h": 68 },
+    "sourceSize": { "w": 68, "h": 68 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.34.1-x64",
+  "image": "explosion_anim.png",
+  "format": "RGBA8888",
+  "size": { "w": 884, "h": 68 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 5", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 4", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
